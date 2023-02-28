@@ -18,7 +18,6 @@ use esp32s3_hal as hal;
 use embassy_executor::Executor;
 use embassy_time::{Duration, Ticker};
 use esp_backtrace as _;
-use esp_println::logger::init_logger;
 use esp_println::println;
 use esp_wifi::esp_now::{EspNow, PeerInfo, BROADCAST_ADDRESS};
 use esp_wifi::initialize;
@@ -38,8 +37,7 @@ use shared_bus::{BusManagerSimple, NullMutex, I2cProxy, BusManager};
 #[cfg(any(feature = "esp32c3", feature = "esp32c2"))]
 use hal::system::SystemExt;
 
-#[cfg(any(feature = "esp32c3", feature = "esp32c2"))]
-use riscv_rt::entry;
+
 #[cfg(any(feature = "esp32", feature = "esp32s3", feature = "esp32s2"))]
 use xtensa_lx_rt::entry;
 
@@ -65,16 +63,6 @@ async fn run(mut esp_now: EspNow, mut _icm : Icm42670<I2cProxy<'static, NullMute
         
         let res = select(ticker.next(), async {
             let r = esp_now.receive_async().await;
-
-            // Use this code to receive the same data
-
-            // let rec_bytes = r.get_data();
-            // let bits = ((rec_bytes[0] as u32) << 24)
-            // | ((rec_bytes[1] as u32) << 16)
-            // | ((rec_bytes[2] as u32) << 8)
-            // | 0;
-
-            // println!("Recieved {:x?}", f32::from_bits(bits));
 
             if r.info.dst_address == BROADCAST_ADDRESS {
                 if !esp_now.peer_exists(&r.info.src_address).unwrap() {
@@ -107,7 +95,6 @@ static EXECUTOR: StaticCell<Executor> = StaticCell::new();
 
 #[entry]
 fn main() -> ! {
-    init_logger(log::LevelFilter::Info);
     esp_wifi::init_heap();
 
     let peripherals = Peripherals::take();

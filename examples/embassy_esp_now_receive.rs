@@ -64,8 +64,8 @@ async fn run(mut esp_now: EspNow) {
 
         match res {
             Either::First(_) => {
-                //println!("Send");
-                //esp_now.send(&BROADCAST_ADDRESS, b"0123456789").unwrap();
+                println!("Send");
+                esp_now.send(&BROADCAST_ADDRESS, b"0123456789").unwrap();
             }
             Either::Second(_) => (),
         }
