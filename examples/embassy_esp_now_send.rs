@@ -121,41 +121,32 @@ fn main() -> ! {
 
     let io = IO::new(peripherals.GPIO, peripherals.IO_MUX);
 
-    // #[cfg(any(feature = "esp32c3", feature = "esp32c2"))]
-    // {
-        use hal::systimer::SystemTimer;
-        let syst = SystemTimer::new(peripherals.SYSTIMER);
-        initialize(syst.alarm0, Rng::new(peripherals.RNG), &clocks).unwrap();
- 
-        unsafe{
-            let i2c = I2C::new(
-                peripherals.I2C0,
-                io.pins.gpio10,
-                io.pins.gpio8,
-                100u32.kHz(),
-                &mut system.peripheral_clock_control,
-                &clocks,
-            );
+    
+    use hal::systimer::SystemTimer;
+    let syst = SystemTimer::new(peripherals.SYSTIMER);
+    initialize(syst.alarm0, Rng::new(peripherals.RNG), &clocks).unwrap();
 
-            let bus = BusManagerSimple::new(i2c);
-            let mut icm = Icm42670::new(core::mem::transmute(bus.acquire_i2c()), Address::Primary).unwrap();
-        
-    //}
-    // #[cfg(any(feature = "esp32", feature = "esp32s3", feature = "esp32s2"))]
-    // {
-    //     use hal::timer::TimerGroup;
-    //     let timg1 = TimerGroup::new(peripherals.TIMG1, &clocks);
-    //     initialize(timg1.timer0, Rng::new(peripherals.RNG), &clocks).unwrap();
-    // }
+    unsafe{
+        let i2c = I2C::new(
+            peripherals.I2C0,
+            io.pins.gpio10,
+            io.pins.gpio8,
+            100u32.kHz(),
+            &mut system.peripheral_clock_control,
+            &clocks,
+        );
 
-    let esp_now = esp_wifi::esp_now::esp_now().initialize().unwrap();
-    println!("esp-now version {}", esp_now.get_version().unwrap());
-    let timer_group0 = TimerGroup::new(peripherals.TIMG0, &clocks);
-    embassy::init(&clocks, timer_group0.timer0);
-    let executor = EXECUTOR.init(Executor::new());
-    executor.run(|spawner| {
-        spawner.spawn(run(esp_now, icm)).ok();
-    });
-}
+        let bus = BusManagerSimple::new(i2c);
+        let mut icm = Icm42670::new(core::mem::transmute(bus.acquire_i2c()), Address::Primary).unwrap();
+
+        let esp_now = esp_wifi::esp_now::esp_now().initialize().unwrap();
+        println!("esp-now version {}", esp_now.get_version().unwrap());
+        let timer_group0 = TimerGroup::new(peripherals.TIMG0, &clocks);
+        embassy::init(&clocks, timer_group0.timer0);
+        let executor = EXECUTOR.init(Executor::new());
+        executor.run(|spawner| {
+            spawner.spawn(run(esp_now, icm)).ok();
+        });
+    }
 }
 

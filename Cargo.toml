@@ -86,12 +86,12 @@ esp-println = { version = "0.2.1", features = [ "esp32s2" ] }
 
 [features]
 default = [ "rt", "eh1" ]
-rt = ["xtensa-lx-rt"] # for esp32 and esp32s2 chips
-# rt = [ ] # for esp32c3 chip
+# rt = ["xtensa-lx-rt"] # for esp32 and esp32s2 chips
+rt = [ ] # for esp32c3 chip
 # eh1 = ["esp32s3"]
 # eh1 = ["esp32-hal/eh1", "esp32"]
-eh1 = ["esp32s2-hal/eh1", "esp32s2"]
-# eh1 = ["esp32c3-hal/eh1", "esp32c3"]
+# eh1 = ["esp32s2-hal/eh1", "esp32s2"]
+eh1 = ["esp32c3-hal/eh1", "esp32c3"]
 
 esp32 = []
 esp32s2 = []
