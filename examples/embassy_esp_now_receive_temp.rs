@@ -31,18 +31,21 @@ use core::str;
 #[cfg(any(feature = "esp32c3", feature = "esp32c2"))]
 use hal::system::SystemExt;
 
+async fn make_bits(bytes :&[u8]) -> u32
+{
+    ((bytes[0] as u32) << 24)
+            | ((bytes[1] as u32) << 16)
+            | ((bytes[2] as u32) << 8)
+            | 0
+}
+
 #[embassy_executor::task]
 async fn run(mut esp_now: EspNow) {
     let mut ticker = Ticker::every(Duration::from_secs(3));
     loop {
         let res = select(ticker.next(), async {
             let r = esp_now.receive_async().await;
-            let rec_bytes = r.get_data();
-
-            let bits = ((rec_bytes[0] as u32) << 24)
-            | ((rec_bytes[1] as u32) << 16)
-            | ((rec_bytes[2] as u32) << 8)
-            | 0;
+            let bits: u32 = make_bits(r.get_data()).await;
 
             println!("Recieved {:x?}°C ", f32::from_bits(bits));
 

@@ -13,17 +13,17 @@ Don't forget about (un)commenting corresponding dependencies for used chip!
 
 Execution command for sender (`RUST-BOARD` in our case):
 ```
-cargo +nightly espflash --example embassy_esp_now_send --release --target riscv32imc-unknown-none-elf --monitor
+cargo +nightly espflash --example embassy_esp_now_send_temp --release --target riscv32imc-unknown-none-elf --monitor
 ```
 
 Execution command for receivers (`RISC`):
 ```
-cargo +nightly espflash --example embassy_esp_now_receive --release --target riscv32imc-unknown-none-elf --monitor
+cargo +nightly espflash --example embassy_esp_now_receive_temp --release --target riscv32imc-unknown-none-elf --monitor
 ```
 
 Execution command for receivers (`XTENSA`):
 ```
-cargo +esp espflash --example embassy_esp_now_receive --release --target xtensa-<chip_name>-none-elf --monitor
+cargo +esp espflash --example embassy_esp_now_receive_temp --release --target xtensa-<chip_name>-none-elf --monitor
 ```
 
 In case you don't have corresponding environment, take a look at [espup](https://github.com/esp-rs/espup).

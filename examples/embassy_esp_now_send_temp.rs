@@ -41,13 +41,23 @@ use hal::system::SystemExt;
 #[cfg(any(feature = "esp32", feature = "esp32s3", feature = "esp32s2"))]
 use xtensa_lx_rt::entry;
 
+async fn make_bytes(bits :u32) -> [u8;4]
+{
+        let b1: u8 = (bits >> 24) as u8;
+        let b2: u8 = (bits >> 16) as u8;
+        let b3: u8 = (bits >> 8) as u8;
+        let b4: u8 = bits as u8;
+
+
+        [(bits >> 24) as u8, (bits >> 16) as u8, (bits >> 8) as u8, bits as u8]
+}
+
 #[embassy_executor::task]
 async fn run(mut esp_now: EspNow, mut _icm : Icm42670<I2cProxy<'static, NullMutex<I2C<'static, hal::peripherals::I2C0, >>>>) {
     let mut ticker = Ticker::every(Duration::from_secs(3));
     loop { 
         let temp = _icm.temperature().unwrap();
-
-        println!("Sending temp {:x?}", temp);
+       println!("Sending temp {:x?}", temp);
 
         // Convert f32 to u32
         let bits: u32 = temp.to_bits();
@@ -58,6 +68,7 @@ async fn run(mut esp_now: EspNow, mut _icm : Icm42670<I2cProxy<'static, NullMute
         let b3: u8 = (bits >> 8) as u8;
         let b4: u8 = bits as u8;
         let bytes: [u8; 4] = [b1, b2, b3, b4];
+
 
         println!("Sending temp (bytes) {:x?}", bytes);
         
