@@ -23,7 +23,7 @@ cargo +nightly espflash --example embassy_esp_now_receive --release --target ris
 
 Execution command for receivers (`XTENSA`):
 ```
-cargo +esp espflash --example embassy_esp_now_receive --release --target riscv32imc-unknown-none-elf --monitor
+cargo +esp espflash --example embassy_esp_now_receive --release --target xtensa-<chip_name>-none-elf --monitor
 ```
 
 In case you don't have corresponding environment, take a look at [espup](https://github.com/esp-rs/espup).
